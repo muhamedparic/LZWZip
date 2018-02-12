@@ -14,6 +14,7 @@ namespace LZWZip
     public partial class MainForm : Form
     {
         Stream importStream = null;
+        string filePath = "";
 
         public MainForm()
         {
@@ -52,6 +53,7 @@ namespace LZWZip
                         using (myStream)
                         {
                             importStream = myStream;
+                            filePath = openFileDialog.FileName;
                             fileLocationTextBox.Text = openFileDialog.FileName;
                             // Insert code to read the stream here.
                         }
@@ -73,7 +75,7 @@ namespace LZWZip
             //myCompressor.InputStream = importStream;
 
             Stream myStream = myCompressor.Run();
-            FileStream fileOutput = File.Open("c:\\blala", FileMode.Create);
+            FileStream fileOutput = File.Open(filePath, FileMode.Create);
             myStream.CopyTo(fileOutput);
             myStream.Close(); // Cleanup
             fileOutput.Close(); // More cleanup
@@ -98,6 +100,7 @@ namespace LZWZip
                         using (myStream)
                         {
                             importStream = myStream;
+                            filePath = openFileDialog.FileName;
                             decompressionFileLocationTextBox.Text = fileLocationTextBox.Text = openFileDialog.FileName; 
                             // Insert code to read the stream here.
                         }
@@ -115,7 +118,7 @@ namespace LZWZip
             Decompressor myDecompressor = new Decompressor();
             myDecompressor.InputStream = importStream; // User file is the path to the compressed file
             Stream myStream = myDecompressor.Run();
-            FileStream fileOutput = File.Open("c://blala", FileMode.Create); // Path to the decompressed file
+            FileStream fileOutput = File.Open(filePath.Substring(0, filePath.Length - 5), FileMode.Create); // Path to the decompressed file
             myStream.CopyTo(fileOutput);
             myStream.Close();
             fileOutput.Close(); // Again, cleanup
