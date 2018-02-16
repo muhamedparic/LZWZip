@@ -9,28 +9,21 @@ namespace LZWZip
 {
     public enum CompressionMode
     {
+        Auto,
         CompressThenJoin,
         JoinThenCompress
     }
 
     public class Compressor
     {
-        private List<Stream> inputStreams = new List<Stream>();
-        public List<Stream> InputStreams { get => inputStreams; }
+        public List<Stream> InputStreams { get; private set; } = new List<Stream>();
 
         public uint MaxSymbolLength { get; set; }
         public CompressionMode FileCompressionMode { get; set; } = CompressionMode.CompressThenJoin;
 
-        private static Dictionary<string, int> defaultDictionary = new Dictionary<string, int>();
-
         public Compressor()
         {
-            // Populating the default dictionary
-            if (defaultDictionary.Count == 0)
-            {
-                for (int i = 0; i < 256; i++)
-                    defaultDictionary[((char)i).ToString()] = i;
-            }
+            
         }
 
         public void DecomposeToMaxLengthTest()
@@ -54,9 +47,44 @@ namespace LZWZip
             }
         }
 
+        private Dictionary<string, int> DefaultDictionary()
+        {
+            Dictionary<string, int> newDefaultDictionary = new Dictionary<string, int>();
+
+            for (int i = 0; i < 256; i++)
+                newDefaultDictionary[((char)i).ToString()] = i;
+
+            return newDefaultDictionary;
+        }
+
+        private Dictionary<int, string> DefaultInverseDictionary()
+        {
+            Dictionary<int, string> newInverseDictionary = new Dictionary<int, string>();
+
+            for (int i = 0; i < 256; i++)
+                newInverseDictionary[i] = ((char)i).ToString();
+
+            return newInverseDictionary;
+        }
+
+
         public Stream Run()
         {
-            return null;
+            MemoryStream outputStream = new MemoryStream();
+            if (InputStreams.Count != 1)
+            {
+                throw new ArgumentException("Only one input stream, thank you!");
+            }
+
+            Stream inputStream = InputStreams[0];
+            Dictionary<string, int> dictionary = DefaultDictionary();
+            Dictionary<int, string> inverseDictionary = DefaultInverseDictionary();
+
+            List<int> compressedStream = CompressStream(inputStream, dictionary, ref inverseDictionary);
+            int optimalLength = -1;
+            compressedStream = FlattenToOptimalSymbolLength(compressedStream, dictionary, inverseDictionary, out optimalLength);
+
+            return ListToStream(compressedStream, optimalLength);
         }
 
         private static List<int> CompressStream(Stream stream, Dictionary<string, int> dictionary, ref Dictionary<int, string> inverseDictionary)
@@ -64,7 +92,6 @@ namespace LZWZip
             List<int> outputValues = new List<int>();
             string currentString = "";
             int nextDictionaryValue = dictionary.Values.Max() + 1;
-            inverseDictionary = new Dictionary<int, string>();
 
             while (true)
             {
@@ -97,17 +124,17 @@ namespace LZWZip
 
         private List<int> FlattenToOptimalSymbolLength(in List<int> symbols, in Dictionary<string, int> dictionary, in Dictionary<int, string> inverseDictionary, out int optimalSymbolLength)
         {
-            Int64 currentSymbolLength = RequiredSymbolLength(symbols);
+            Int64 currentSymbolLength = Math.Max(symbols.Max(symbol => RequiredSymbolLength(symbol)), 8);
             List<int> currentList = symbols;
             Int64 currentTotalLength = currentSymbolLength * currentList.Count;
 
             while (true)
             {
-                if (currentSymbolLength == 1)
+                if (currentSymbolLength == 8)
                     break;
 
-                Int64 newSymbolLength = currentSymbolLength - 1;
-                List<int> listWithShorterSymbols = FlattenToMaxLength(currentList, (int)newSymbolLength, dictionary, inverseDictionary);
+                int newSymbolLength = (int)currentSymbolLength - 1;
+                List<int> listWithShorterSymbols = FlattenToMaxLength(currentList, newSymbolLength, dictionary, inverseDictionary);
                 Int64 newTotalLength = newSymbolLength * listWithShorterSymbols.Count;
 
                 if (newTotalLength < currentTotalLength)
@@ -124,16 +151,6 @@ namespace LZWZip
 
             optimalSymbolLength = (int)currentSymbolLength;
             return currentList;
-        }
-
-        private int RequiredSymbolLength(in List<int> symbols)
-        {
-            int maxSymbolLength = 0;
-
-            foreach (int symbol in symbols)
-                maxSymbolLength = Math.Max(maxSymbolLength, RequiredSymbolLength(symbol));
-
-            return maxSymbolLength;
         }
 
         private int RequiredSymbolLength(int dictionaryValue)
@@ -162,12 +179,39 @@ namespace LZWZip
 
         private List<string> FlattenStringToMaxLength(string input, int maxSymbolLength, in Dictionary<string, int> dictionary)
         {
-            if (RequiredSymbolLength(dictionary[input]) <= maxSymbolLength)
+            if (input.Length == 1 || RequiredSymbolLength(dictionary[input]) <= maxSymbolLength)
                 return new List<string> { input };
 
             List<string> stringList = FlattenStringToMaxLength(input.Substring(0, input.Length - 1), maxSymbolLength, dictionary);
             stringList.Add(input[input.Length - 1].ToString());
             return stringList;
+        }
+
+        private Stream ListToStream(in List<int> inputList, int bitsPerElement)
+        {
+            Int64 arraySizeInbits = inputList.Count * bitsPerElement;
+            Int64 paddedArraySize = arraySizeInbits;
+
+            if (paddedArraySize % 8 != 0)
+                paddedArraySize += 8 - (paddedArraySize % 8);
+
+            byte[] buffer = new byte[paddedArraySize / 8];
+
+            for (Int64 i = 0; i < arraySizeInbits; i++)
+            {
+                int bufferElement = (int)(i / 8);
+                int bufferBit = (int)(i % 8);
+
+                int listElement = (int)(i / bitsPerElement);
+                int listBit = (int)(i % bitsPerElement);
+
+                bool bit = (inputList[listElement] & (1 << listBit)) != 0;
+
+                if (bit)
+                    buffer[bufferElement] |= (byte)(1 << bufferBit);
+            }
+
+            return new MemoryStream(buffer);
         }
     }
 }

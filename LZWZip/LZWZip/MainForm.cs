@@ -116,11 +116,11 @@ namespace LZWZip
         private void decompressionButton_Click(object sender, EventArgs e)
         {
             Decompressor myDecompressor = new Decompressor();
-            myDecompressor.InputStream = importStream; // User file is the path to the compressed file
-            Stream myStream = myDecompressor.Run();
+            //myDecompressor.InputStreams = importStream; // User file is the path to the compressed file
+            //Stream myStream = myDecompressor.Run();
             FileStream fileOutput = File.Open(filePath.Substring(0, filePath.Length - 5), FileMode.Create); // Path to the decompressed file
-            myStream.CopyTo(fileOutput);
-            myStream.Close();
+            //myStream.CopyTo(fileOutput);
+            //myStream.Close();
             fileOutput.Close(); // Again, cleanup
         }
     }
