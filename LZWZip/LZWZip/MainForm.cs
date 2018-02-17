@@ -50,13 +50,9 @@ namespace LZWZip
                 {
                     if ((myStream = openFileDialog.OpenFile()) != null)
                     {
-                        using (myStream)
-                        {
-                            importStream = myStream;
-                            filePath = openFileDialog.FileName;
-                            fileLocationTextBox.Text = openFileDialog.FileName;
-                            // Insert code to read the stream here.
-                        }
+                        importStream = myStream;
+                        filePath = openFileDialog.FileName;
+                        fileLocationTextBox.Text = openFileDialog.FileName;
                     }
                 }
                 catch (Exception ex)
@@ -72,10 +68,10 @@ namespace LZWZip
             uint maxSymbolLength = (uint) symbolLengthUpDown.Value;
             Compressor myCompressor = new Compressor();
             myCompressor.MaxSymbolLength = maxSymbolLength;
-            //myCompressor.InputStream = importStream;
+            myCompressor.InputStreams.Add(importStream);
 
             Stream myStream = myCompressor.Run();
-            FileStream fileOutput = File.Open(filePath, FileMode.Create);
+            FileStream fileOutput = File.Open(filePath + ".lzw", FileMode.Create);
             myStream.CopyTo(fileOutput);
             myStream.Close(); // Cleanup
             fileOutput.Close(); // More cleanup

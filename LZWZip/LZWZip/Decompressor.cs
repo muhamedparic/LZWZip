@@ -9,6 +9,13 @@ namespace LZWZip
 {
     class Decompressor
     {
-        
+        Stream InputStream { get; set; }
+
+        public Decompressor()
+        {
+
+        }
+
+
     }
 }

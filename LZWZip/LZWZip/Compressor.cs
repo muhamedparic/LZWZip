@@ -26,28 +26,7 @@ namespace LZWZip
             
         }
 
-        public void DecomposeToMaxLengthTest()
-        {
-            Dictionary<string, int> dictionary = new Dictionary<string, int>
-            {
-                ["a"] = 0,
-                ["b"] = 1,
-                ["ab"] = 2,
-                ["ba"] = 3,
-                ["aa"] = 4,
-                ["aaa"] = 5,
-                ["aba"] = 6
-            };
-
-            var decomposed = FlattenStringToMaxLength("aba", 2, dictionary);
-
-            foreach (string s in decomposed)
-            {
-                Console.WriteLine(s);
-            }
-        }
-
-        private Dictionary<string, int> DefaultDictionary()
+        public static Dictionary<string, int> DefaultDictionary()
         {
             Dictionary<string, int> newDefaultDictionary = new Dictionary<string, int>();
 
@@ -57,7 +36,7 @@ namespace LZWZip
             return newDefaultDictionary;
         }
 
-        private Dictionary<int, string> DefaultInverseDictionary()
+        public static Dictionary<int, string> DefaultInverseDictionary()
         {
             Dictionary<int, string> newInverseDictionary = new Dictionary<int, string>();
 
@@ -83,6 +62,9 @@ namespace LZWZip
             List<int> compressedStream = CompressStream(inputStream, dictionary, ref inverseDictionary);
             int optimalLength = -1;
             compressedStream = FlattenToOptimalSymbolLength(compressedStream, dictionary, inverseDictionary, out optimalLength);
+
+            foreach (Stream stream in InputStreams)
+                stream.Close();
 
             return ListToStream(compressedStream, optimalLength);
         }
