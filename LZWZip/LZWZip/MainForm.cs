@@ -64,7 +64,7 @@ namespace LZWZip
 
         private void compressionButton_Click(object sender, EventArgs e)
         {
-
+            compressionLabel.Invoke(new Action(() => compressionLabel.Text = "Compressing"));
             uint maxSymbolLength = (uint) symbolLengthUpDown.Value;
             Compressor myCompressor = new Compressor();
             myCompressor.MaxSymbolLength = maxSymbolLength;
@@ -80,6 +80,7 @@ namespace LZWZip
                 myStream.CopyTo(fileOutput);
 
             myStream.Close();
+            compressionLabel.Text = "Done";
         }
 
         private void decompressionImportButton_Click(object sender, EventArgs e)
@@ -112,6 +113,7 @@ namespace LZWZip
 
         private void decompressionButton_Click(object sender, EventArgs e)
         {
+            decompressionLabel.Invoke(new Action(() => decompressionLabel.Text = "Decompressing"));
             Decompressor myDecompressor = new Decompressor();
             myDecompressor.InputStream = importStream;
             Stream myStream = myDecompressor.Run();
@@ -120,6 +122,7 @@ namespace LZWZip
                 myStream.CopyTo(fileOutput);
 
             myStream.Close();
+            decompressionLabel.Text = "Done";
         }
     }
 }

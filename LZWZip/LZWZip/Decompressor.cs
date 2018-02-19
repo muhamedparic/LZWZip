@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 namespace LZWZip
 {
@@ -38,8 +39,9 @@ namespace LZWZip
             int symbolCount = (int)((8 * (InputStream.Length - 1)) / symbolLength);
             int[] symbols = StreamToSymbolList(InputStream, symbolCount, symbolLength);
 
-            UnicodeEncoding encoding = new UnicodeEncoding(false, false);
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             foreach (int symbol in symbols)
             {
                 bool success = inverseDictionary.TryGetValue(symbol, out currentWord);
@@ -51,6 +53,10 @@ namespace LZWZip
                     inverseDictionary[nextDictionaryValue++] = lastWord + currentWord[0];
                 lastWord = currentWord;
             }
+
+            sw.Stop();
+            InputStream.Close();
+            //Console.WriteLine(sw.Elapsed);
 
             return new MemoryStream(ToByteArray(outputString));
         }
