@@ -30,6 +30,7 @@
         {
             this.compressionTabControl = new System.Windows.Forms.TabControl();
             this.CompressionTab = new System.Windows.Forms.TabPage();
+            this.compressionButton = new System.Windows.Forms.Button();
             this.compressionModeComboBox = new System.Windows.Forms.ComboBox();
             this.compressionModeLabel = new System.Windows.Forms.Label();
             this.automaticSymbolLengthCheckbox = new System.Windows.Forms.CheckBox();
@@ -38,10 +39,9 @@
             this.importFileButton = new System.Windows.Forms.Button();
             this.fileLocationTextBox = new System.Windows.Forms.TextBox();
             this.DecompressionTab = new System.Windows.Forms.TabPage();
+            this.decompressionButton = new System.Windows.Forms.Button();
             this.decompressionImportButton = new System.Windows.Forms.Button();
             this.decompressionFileLocationTextBox = new System.Windows.Forms.TextBox();
-            this.compressionButton = new System.Windows.Forms.Button();
-            this.decompressionButton = new System.Windows.Forms.Button();
             this.compressionTabControl.SuspendLayout();
             this.CompressionTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.symbolLengthUpDown)).BeginInit();
@@ -76,6 +76,16 @@
             this.CompressionTab.Text = "Compression";
             this.CompressionTab.UseVisualStyleBackColor = true;
             // 
+            // compressionButton
+            // 
+            this.compressionButton.Location = new System.Drawing.Point(387, 179);
+            this.compressionButton.Name = "compressionButton";
+            this.compressionButton.Size = new System.Drawing.Size(110, 32);
+            this.compressionButton.TabIndex = 7;
+            this.compressionButton.Text = "Run compression";
+            this.compressionButton.UseVisualStyleBackColor = true;
+            this.compressionButton.Click += new System.EventHandler(this.compressionButton_Click);
+            // 
             // compressionModeComboBox
             // 
             this.compressionModeComboBox.FormattingEnabled = true;
@@ -100,6 +110,8 @@
             // automaticSymbolLengthCheckbox
             // 
             this.automaticSymbolLengthCheckbox.AutoSize = true;
+            this.automaticSymbolLengthCheckbox.Checked = true;
+            this.automaticSymbolLengthCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.automaticSymbolLengthCheckbox.Location = new System.Drawing.Point(122, 69);
             this.automaticSymbolLengthCheckbox.Name = "automaticSymbolLengthCheckbox";
             this.automaticSymbolLengthCheckbox.Size = new System.Drawing.Size(162, 17);
@@ -110,6 +122,7 @@
             // 
             // symbolLengthUpDown
             // 
+            this.symbolLengthUpDown.Enabled = false;
             this.symbolLengthUpDown.Location = new System.Drawing.Point(122, 43);
             this.symbolLengthUpDown.Maximum = new decimal(new int[] {
             128,
@@ -169,6 +182,16 @@
             this.DecompressionTab.Text = "Decompression";
             this.DecompressionTab.UseVisualStyleBackColor = true;
             // 
+            // decompressionButton
+            // 
+            this.decompressionButton.Location = new System.Drawing.Point(390, 154);
+            this.decompressionButton.Name = "decompressionButton";
+            this.decompressionButton.Size = new System.Drawing.Size(109, 42);
+            this.decompressionButton.TabIndex = 2;
+            this.decompressionButton.Text = "Run decompression";
+            this.decompressionButton.UseVisualStyleBackColor = true;
+            this.decompressionButton.Click += new System.EventHandler(this.decompressionButton_Click);
+            // 
             // decompressionImportButton
             // 
             this.decompressionImportButton.Location = new System.Drawing.Point(409, 16);
@@ -185,26 +208,6 @@
             this.decompressionFileLocationTextBox.Name = "decompressionFileLocationTextBox";
             this.decompressionFileLocationTextBox.Size = new System.Drawing.Size(371, 20);
             this.decompressionFileLocationTextBox.TabIndex = 0;
-            // 
-            // compressionButton
-            // 
-            this.compressionButton.Location = new System.Drawing.Point(387, 179);
-            this.compressionButton.Name = "compressionButton";
-            this.compressionButton.Size = new System.Drawing.Size(110, 32);
-            this.compressionButton.TabIndex = 7;
-            this.compressionButton.Text = "Run compression";
-            this.compressionButton.UseVisualStyleBackColor = true;
-            this.compressionButton.Click += new System.EventHandler(this.compressionButton_Click);
-            // 
-            // decompressionButton
-            // 
-            this.decompressionButton.Location = new System.Drawing.Point(390, 154);
-            this.decompressionButton.Name = "decompressionButton";
-            this.decompressionButton.Size = new System.Drawing.Size(109, 42);
-            this.decompressionButton.TabIndex = 2;
-            this.decompressionButton.Text = "Run decompression";
-            this.decompressionButton.UseVisualStyleBackColor = true;
-            this.decompressionButton.Click += new System.EventHandler(this.decompressionButton_Click);
             // 
             // MainForm
             // 

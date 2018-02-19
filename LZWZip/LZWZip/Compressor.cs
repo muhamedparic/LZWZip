@@ -9,21 +9,20 @@ namespace LZWZip
 {
     public enum CompressionMode
     {
-        Auto,
         CompressThenJoin,
         JoinThenCompress
     }
 
     public class Compressor
     {
-        public List<Stream> InputStreams { get; private set; } = new List<Stream>();
-
+        public List<Stream> InputStreams { get; } = new List<Stream>();
         public uint MaxSymbolLength { get; set; }
         public CompressionMode FileCompressionMode { get; set; } = CompressionMode.CompressThenJoin;
+        public List<string> FileNames { get; } = new List<string>();
 
         public Compressor()
         {
-            
+            MaxSymbolLength = 255;
         }
 
         public static Dictionary<string, int> DefaultDictionary()
@@ -49,27 +48,45 @@ namespace LZWZip
 
         public Stream Run()
         {
-            MemoryStream outputStream = new MemoryStream();
-            if (InputStreams.Count != 1)
-            {
-                throw new ArgumentException("Only one input stream, thank you!");
-            }
+            //MemoryStream outputStream = new MemoryStream();
+            //outputStream.WriteByte((byte)InputStreams.Count); // Number of files
+
+            //if (FileCompressionMode == CompressionMode.CompressThenJoin)
+            //    outputStream.WriteByte(0);
+            //else
+            //    outputStream.WriteByte(1); // Compression mode indicator
+
+            //if (FileCompressionMode == CompressionMode.JoinThenCompress)
+            //{
+            //    foreach (Stream stream in InputStreams)
+            //    {
+
+            //    }
+            //}
 
             Stream inputStream = InputStreams[0];
             Dictionary<string, int> dictionary = DefaultDictionary();
             Dictionary<int, string> inverseDictionary = DefaultInverseDictionary();
 
-            List<int> compressedStream = CompressStream(inputStream, dictionary, ref inverseDictionary);
+            List<int> compressedList = CompressStream(inputStream, dictionary, inverseDictionary);
             int optimalLength = -1;
-            compressedStream = FlattenToOptimalSymbolLength(compressedStream, dictionary, inverseDictionary, out optimalLength);
+            compressedList = FlattenToOptimalSymbolLength(compressedList, dictionary, inverseDictionary, out optimalLength);
 
             foreach (Stream stream in InputStreams)
                 stream.Close();
 
-            return ListToStream(compressedStream, optimalLength);
+            MemoryStream outputStream = new MemoryStream();
+            outputStream.WriteByte((byte)optimalLength);
+
+            using (Stream byteDataStream = ListToStream(compressedList, optimalLength))
+            {
+                byteDataStream.CopyTo(outputStream);
+            }
+
+            return outputStream;
         }
 
-        private static List<int> CompressStream(Stream stream, Dictionary<string, int> dictionary, ref Dictionary<int, string> inverseDictionary)
+        private static List<int> CompressStream(Stream stream, Dictionary<string, int> dictionary, Dictionary<int, string> inverseDictionary)
         {
             List<int> outputValues = new List<int>();
             string currentString = "";
@@ -119,7 +136,7 @@ namespace LZWZip
                 List<int> listWithShorterSymbols = FlattenToMaxLength(currentList, newSymbolLength, dictionary, inverseDictionary);
                 Int64 newTotalLength = newSymbolLength * listWithShorterSymbols.Count;
 
-                if (newTotalLength < currentTotalLength)
+                if (currentSymbolLength > MaxSymbolLength || newTotalLength < currentTotalLength)
                 {
                     currentList = listWithShorterSymbols;
                     currentSymbolLength = newSymbolLength;
@@ -135,7 +152,7 @@ namespace LZWZip
             return currentList;
         }
 
-        private int RequiredSymbolLength(int dictionaryValue)
+        public static int RequiredSymbolLength(int dictionaryValue)
         {
             return (int)Math.Log(dictionaryValue, 2) + 1;
         }

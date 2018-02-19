@@ -39,7 +39,7 @@ namespace LZWZip
             Stream myStream = null;
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
             openFileDialog.Filter = "All files (*.*)|*.*";
             // openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
@@ -68,13 +68,18 @@ namespace LZWZip
             uint maxSymbolLength = (uint) symbolLengthUpDown.Value;
             Compressor myCompressor = new Compressor();
             myCompressor.MaxSymbolLength = maxSymbolLength;
-            myCompressor.InputStreams.Add(importStream);
 
+            if (automaticSymbolLengthCheckbox.Checked)
+                myCompressor.MaxSymbolLength = 255;
+
+            myCompressor.InputStreams.Add(importStream);
             Stream myStream = myCompressor.Run();
-            FileStream fileOutput = File.Open(filePath + ".lzw", FileMode.Create);
-            myStream.CopyTo(fileOutput);
-            myStream.Close(); // Cleanup
-            fileOutput.Close(); // More cleanup
+            myStream.Seek(0, SeekOrigin.Begin);
+
+            using (FileStream fileOutput = File.Open(filePath + ".lzw", FileMode.Create))
+                myStream.CopyTo(fileOutput);
+
+            myStream.Close();
         }
 
         private void decompressionImportButton_Click(object sender, EventArgs e)
@@ -82,7 +87,7 @@ namespace LZWZip
             Stream myStream = null;
             OpenFileDialog openFileDialog = new OpenFileDialog();
 
-            openFileDialog.InitialDirectory = "c:\\";
+            openFileDialog.InitialDirectory = Directory.GetCurrentDirectory();
             openFileDialog.Filter = "lzw files (*.lzw)|*.lzw";
             // openFileDialog.FilterIndex = 2;
             openFileDialog.RestoreDirectory = true;
@@ -93,13 +98,9 @@ namespace LZWZip
                 {
                     if ((myStream = openFileDialog.OpenFile()) != null)
                     {
-                        using (myStream)
-                        {
-                            importStream = myStream;
-                            filePath = openFileDialog.FileName;
-                            decompressionFileLocationTextBox.Text = fileLocationTextBox.Text = openFileDialog.FileName; 
-                            // Insert code to read the stream here.
-                        }
+                        importStream = myStream;
+                        filePath = openFileDialog.FileName;
+                        decompressionFileLocationTextBox.Text = fileLocationTextBox.Text = openFileDialog.FileName; 
                     }
                 }
                 catch (Exception ex)
@@ -112,12 +113,13 @@ namespace LZWZip
         private void decompressionButton_Click(object sender, EventArgs e)
         {
             Decompressor myDecompressor = new Decompressor();
-            //myDecompressor.InputStreams = importStream; // User file is the path to the compressed file
-            //Stream myStream = myDecompressor.Run();
-            FileStream fileOutput = File.Open(filePath.Substring(0, filePath.Length - 5), FileMode.Create); // Path to the decompressed file
-            //myStream.CopyTo(fileOutput);
-            //myStream.Close();
-            fileOutput.Close(); // Again, cleanup
+            myDecompressor.InputStream = importStream;
+            Stream myStream = myDecompressor.Run();
+            myStream.Seek(0, SeekOrigin.Begin);
+            using (FileStream fileOutput = File.Open(filePath.Substring(0, filePath.Length - 4), FileMode.Create))
+                myStream.CopyTo(fileOutput);
+
+            myStream.Close();
         }
     }
 }
