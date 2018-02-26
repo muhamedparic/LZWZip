@@ -15,7 +15,7 @@ namespace LZWZip
 
     public class Compressor
     {
-        public List<Stream> InputStreams { get; } = new List<Stream>();
+        public Stream InputStream { get; set; }
         public uint MaxSymbolLength { get; set; }
         public CompressionMode FileCompressionMode { get; set; } = CompressionMode.CompressThenJoin;
         public List<string> FileNames { get; } = new List<string>();
@@ -64,7 +64,7 @@ namespace LZWZip
             //    }
             //}
 
-            Stream inputStream = InputStreams[0];
+            Stream inputStream = InputStream;
             Dictionary<string, int> dictionary = DefaultDictionary();
             Dictionary<int, string> inverseDictionary = DefaultInverseDictionary();
 
@@ -72,8 +72,7 @@ namespace LZWZip
             int optimalLength = -1;
             compressedList = FlattenToOptimalSymbolLength(compressedList, dictionary, inverseDictionary, out optimalLength);
 
-            foreach (Stream stream in InputStreams)
-                stream.Close();
+            InputStream.Close();
 
             MemoryStream outputStream = new MemoryStream();
             outputStream.WriteByte((byte)optimalLength);

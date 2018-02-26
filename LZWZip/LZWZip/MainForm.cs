@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -72,15 +73,20 @@ namespace LZWZip
             if (automaticSymbolLengthCheckbox.Checked)
                 myCompressor.MaxSymbolLength = 255;
 
-            myCompressor.InputStreams.Add(importStream);
+            myCompressor.InputStream = importStream;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             Stream myStream = myCompressor.Run();
+            sw.Stop();
+
             myStream.Seek(0, SeekOrigin.Begin);
 
             using (FileStream fileOutput = File.Open(filePath + ".lzw", FileMode.Create))
                 myStream.CopyTo(fileOutput);
 
             myStream.Close();
-            compressionLabel.Text = "Done";
+            compressionLabel.Text = "Done in " + sw.ElapsedMilliseconds.ToString() + " ms";
         }
 
         private void decompressionImportButton_Click(object sender, EventArgs e)
@@ -116,13 +122,18 @@ namespace LZWZip
             decompressionLabel.Invoke(new Action(() => decompressionLabel.Text = "Decompressing"));
             Decompressor myDecompressor = new Decompressor();
             myDecompressor.InputStream = importStream;
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             Stream myStream = myDecompressor.Run();
+            sw.Stop();
+
             myStream.Seek(0, SeekOrigin.Begin);
             using (FileStream fileOutput = File.Open(filePath.Substring(0, filePath.Length - 4), FileMode.Create))
                 myStream.CopyTo(fileOutput);
 
             myStream.Close();
-            decompressionLabel.Text = "Done";
+            decompressionLabel.Text = "Done in " + sw.ElapsedMilliseconds.ToString() + " ms";
         }
     }
 }

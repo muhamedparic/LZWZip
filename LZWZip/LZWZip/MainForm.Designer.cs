@@ -30,6 +30,7 @@
         {
             this.compressionTabControl = new System.Windows.Forms.TabControl();
             this.CompressionTab = new System.Windows.Forms.TabPage();
+            this.compressionLabel = new System.Windows.Forms.Label();
             this.compressionButton = new System.Windows.Forms.Button();
             this.compressionModeComboBox = new System.Windows.Forms.ComboBox();
             this.compressionModeLabel = new System.Windows.Forms.Label();
@@ -39,11 +40,10 @@
             this.importFileButton = new System.Windows.Forms.Button();
             this.fileLocationTextBox = new System.Windows.Forms.TextBox();
             this.DecompressionTab = new System.Windows.Forms.TabPage();
+            this.decompressionLabel = new System.Windows.Forms.Label();
             this.decompressionButton = new System.Windows.Forms.Button();
             this.decompressionImportButton = new System.Windows.Forms.Button();
             this.decompressionFileLocationTextBox = new System.Windows.Forms.TextBox();
-            this.compressionLabel = new System.Windows.Forms.Label();
-            this.decompressionLabel = new System.Windows.Forms.Label();
             this.compressionTabControl.SuspendLayout();
             this.CompressionTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.symbolLengthUpDown)).BeginInit();
@@ -79,6 +79,15 @@
             this.CompressionTab.Text = "Compression";
             this.CompressionTab.UseVisualStyleBackColor = true;
             // 
+            // compressionLabel
+            // 
+            this.compressionLabel.AutoSize = true;
+            this.compressionLabel.Location = new System.Drawing.Point(299, 189);
+            this.compressionLabel.Name = "compressionLabel";
+            this.compressionLabel.Size = new System.Drawing.Size(38, 13);
+            this.compressionLabel.TabIndex = 8;
+            this.compressionLabel.Text = "Ready";
+            // 
             // compressionButton
             // 
             this.compressionButton.Location = new System.Drawing.Point(387, 179);
@@ -100,6 +109,7 @@
             this.compressionModeComboBox.Name = "compressionModeComboBox";
             this.compressionModeComboBox.Size = new System.Drawing.Size(162, 21);
             this.compressionModeComboBox.TabIndex = 6;
+            this.compressionModeComboBox.Visible = false;
             // 
             // compressionModeLabel
             // 
@@ -109,6 +119,7 @@
             this.compressionModeLabel.Size = new System.Drawing.Size(96, 13);
             this.compressionModeLabel.TabIndex = 5;
             this.compressionModeLabel.Text = "Compression mode";
+            this.compressionModeLabel.Visible = false;
             // 
             // automaticSymbolLengthCheckbox
             // 
@@ -186,6 +197,15 @@
             this.DecompressionTab.Text = "Decompression";
             this.DecompressionTab.UseVisualStyleBackColor = true;
             // 
+            // decompressionLabel
+            // 
+            this.decompressionLabel.AutoSize = true;
+            this.decompressionLabel.Location = new System.Drawing.Point(299, 189);
+            this.decompressionLabel.Name = "decompressionLabel";
+            this.decompressionLabel.Size = new System.Drawing.Size(38, 13);
+            this.decompressionLabel.TabIndex = 3;
+            this.decompressionLabel.Text = "Ready";
+            // 
             // decompressionButton
             // 
             this.decompressionButton.Location = new System.Drawing.Point(387, 179);
@@ -212,24 +232,6 @@
             this.decompressionFileLocationTextBox.Name = "decompressionFileLocationTextBox";
             this.decompressionFileLocationTextBox.Size = new System.Drawing.Size(371, 20);
             this.decompressionFileLocationTextBox.TabIndex = 0;
-            // 
-            // compressionLabel
-            // 
-            this.compressionLabel.AutoSize = true;
-            this.compressionLabel.Location = new System.Drawing.Point(346, 189);
-            this.compressionLabel.Name = "compressionLabel";
-            this.compressionLabel.Size = new System.Drawing.Size(38, 13);
-            this.compressionLabel.TabIndex = 8;
-            this.compressionLabel.Text = "Ready";
-            // 
-            // decompressionLabel
-            // 
-            this.decompressionLabel.AutoSize = true;
-            this.decompressionLabel.Location = new System.Drawing.Point(346, 189);
-            this.decompressionLabel.Name = "decompressionLabel";
-            this.decompressionLabel.Size = new System.Drawing.Size(38, 13);
-            this.decompressionLabel.TabIndex = 3;
-            this.decompressionLabel.Text = "Ready";
             // 
             // MainForm
             // 

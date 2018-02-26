@@ -37,7 +37,7 @@ namespace LZWZip
             int symbolLength = InputStream.ReadByte();
             int nextDictionaryValue = inverseDictionary.Keys.Max() + 1;
             int symbolCount = (int)((8 * (InputStream.Length - 1)) / symbolLength);
-            int[] symbols = StreamToSymbolList(InputStream, symbolCount, symbolLength);
+            int[] symbols = StreamToList(InputStream, symbolCount, symbolLength);
 
 
             Stopwatch sw = new Stopwatch();
@@ -61,7 +61,7 @@ namespace LZWZip
             return new MemoryStream(ToByteArray(outputString));
         }
 
-        private int[] StreamToSymbolList(Stream stream, int symbolCount, int symbolLength)
+        private int[] StreamToList(Stream stream, int symbolCount, int symbolLength)
         {
             byte[] byteStream;
             using (MemoryStream memoryStream = new MemoryStream())

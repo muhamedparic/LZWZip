@@ -30,7 +30,7 @@ namespace LZWZipTest
                 inputData[i] = 97;
 
             Compressor compressor = new Compressor();
-            compressor.InputStreams.Add(new MemoryStream(inputData));
+            compressor.InputStream = new MemoryStream(inputData);
 
             Stream outputStream = compressor.Run();
             outputStream.Seek(0, SeekOrigin.Begin);
